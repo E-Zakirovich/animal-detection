@@ -33,7 +33,7 @@ class Dataset:
         ])
 
         # transform test & train dataset elements
-        self.train_test_ = transforms.Compose([
+        self.validation_test_transform = transforms.Compose([
 
             # resize the image
             transforms.Resize(
@@ -49,7 +49,25 @@ class Dataset:
 
 
     def load_buffalo(self):
-        ...
+
+        # train dataset element processing
+        train_set = datasets.ImageFolder(
+            root=config.buffalo,
+            transform=self.train_transform
+        )
+
+        # validation dataset element processing
+        validation_set = datasets.ImageFolder(
+            root=config.buffalo,
+            transform=self.validation_test_transform
+        )
+
+        # test dataset element processing
+        test_set = datasets.ImageFolder(
+            root=config.buffalo,
+            transform=self.validation_test_transform
+        )
+        
 
     def load_elephant(self):
         ...

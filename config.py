@@ -8,6 +8,7 @@ zebra = "data/Zebra"
 train_size = 0.80
 validation_size = 0.10
 test_size = 0.10
+seed = 42
 
 # network settings
 image_size = 128
