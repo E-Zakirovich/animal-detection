@@ -48,73 +48,7 @@ class Dataset:
         ])
 
 
-    def load_buffalo(self):
-
-        # train dataset element processing
-        train_set = datasets.ImageFolder(
-            root=config.buffalo,
-            transform=self.train_transform
-        )
-
-        # validation dataset element processing
-        validation_set = datasets.ImageFolder(
-            root=config.buffalo,
-            transform=self.validation_test_transform
-        )
-
-        # test dataset element processing
-        test_set = datasets.ImageFolder(
-            root=config.buffalo,
-            transform=self.validation_test_transform
-        )
-
-        # fixed random seed, every run produces the same train/validation/test split
-        generator = torch.Generator().manual_seed(config.seed)
-
-        # splitting the dataset according to its indexes
-        train_indices, test_indices, validation_indices = random_split(
-            train_set,
-            lengths = [config.train_size, config.test_size, config.validation_size],
-            generator = generator
-        )
-
-        train_subset = Subset(
-            train_set,
-            indices = train_indices.indices
-        )
-
-        test_subset = Subset(
-            test_set,
-            indices = test_indices.indices
-        )
-
-        validation_subset = Subset(
-            validation_set,
-            indices = validation_indices.indices
-        )
-
-        train_dataset = DataLoader(
-            train_subset,
-            batch_size = config.batch_size,
-            shuffle = True,
-            num_workers = 2
-        )
-
-        test_dataset = DataLoader(
-            test_subset,
-            batch_size=config.batch_size,
-            shuffle=True,
-            num_workers=2
-        )
-
-        validation_dataset = DataLoader(
-            validation_subset,
-            batch_size=config.batch_size,
-            shuffle=True,
-            num_workers=2
-        )
-
-        return train_dataset, validation_dataset, test_dataset
+    
 
     def load_elephant(self):
         ...
