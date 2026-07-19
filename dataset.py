@@ -31,3 +31,18 @@ class Dataset:
                 std = (0.229, 0.224, 0.225)
             )
         ])
+
+        # transform test & train dataset elements
+        self.train_test_ = transforms.Compose([
+
+            # resize the image
+            transforms.Resize(
+                (config.image_size, config.image_size)
+            ),
+
+            # to teach my cnn, I need to change dataset elements to tensors
+            transforms.ToTensor(),
+
+            # normalization part
+            transforms.Normalize()
+        ])
