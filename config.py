@@ -1,5 +1,8 @@
 # dataset path
-data = "data/"
+buffalo = "data/Buffalo"
+elephant = "data/Elephant"
+rhino = "data/Rhino"
+zebra = "data/Zebra"
 
 # network settings
 image_size = 128
