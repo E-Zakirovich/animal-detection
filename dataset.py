@@ -67,7 +67,16 @@ class Dataset:
             root=config.buffalo,
             transform=self.validation_test_transform
         )
-        
+
+        # fixed random seed, every run produces the same train/validation/test split
+        generator = torch.Generator().manual_seed(config.seed)
+
+        # splitting the dataset according to its indexes
+        train_indices, test_indices, validation_indices = random_split(
+            train_set,
+            lengths = [config.train_size, config.test_size, config.validation_size],
+            generator = generator
+        )
 
     def load_elephant(self):
         ...
