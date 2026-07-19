@@ -46,3 +46,6 @@ class Dataset:
             # normalization part
             transforms.Normalize()
         ])
+
+    def loader(self):
+        ...
