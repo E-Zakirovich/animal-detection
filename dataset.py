@@ -78,6 +78,44 @@ class Dataset:
             generator = generator
         )
 
+        train_subset = Subset(
+            train_set,
+            indices = train_indices.indices
+        )
+
+        test_subset = Subset(
+            test_set,
+            indices = test_indices.indices
+        )
+
+        validation_subset = Subset(
+            validation_set,
+            indices = validation_indices.indices
+        )
+
+        train_dataset = DataLoader(
+            train_subset,
+            batch_size = config.batch_size,
+            shuffle = True,
+            num_workers = 2
+        )
+
+        test_dataset = DataLoader(
+            test_subset,
+            batch_size=config.batch_size,
+            shuffle=True,
+            num_workers=2
+        )
+
+        validation_dataset = DataLoader(
+            validation_subset,
+            batch_size=config.batch_size,
+            shuffle=True,
+            num_workers=2
+        )
+
+        return train_dataset, validation_dataset, test_dataset
+
     def load_elephant(self):
         ...
 
