@@ -47,3 +47,18 @@ class Dataset:
             transforms.Normalize()
         ])
 
+
+    def load_buffalo(self):
+        ...
+
+    def load_elephant(self):
+        ...
+
+    def load_rhino(self):
+        ...
+
+    def load_zebra(self):
+        ...
+
+    def load_dataset(self):
+        ...
