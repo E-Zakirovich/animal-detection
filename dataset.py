@@ -1,4 +1,5 @@
 import torch
+from sympy import false
 from torch.utils.data import DataLoader, random_split, Subset
 from torchvision import datasets, transforms
 import config
@@ -48,16 +49,52 @@ class Dataset:
         ])
 
 
-    
+    def __dataset_loader(self, path):
 
-    def load_elephant(self):
-        ...
+        # train dataset element processing
+        train_set = datasets.ImageFolder(
+            root=path,
+            transform=self.train_transform
+        )
 
-    def load_rhino(self):
-        ...
+        # validation dataset element processing
+        validation_set = datasets.ImageFolder(
+            root=path,
+            transform=self.validation_test_transform
+        )
 
-    def load_zebra(self):
-        ...
+        # test dataset element processing
+        test_set = datasets.ImageFolder(
+            root=path,
+            transform=self.validation_test_transform
+        )
+
+        # fixed random seed, every run produces the same train/validation/test split
+        generator = torch.Generator().manual_seed(config.seed)
+
+        # splitting the dataset according to its indexes
+        train_indices, test_indices, validation_indices = random_split(
+            train_set,
+            lengths = [config.train_size, config.test_size, config.validation_size],
+            generator = generator
+        )
+
+        train_dataset = Subset(
+            train_set,
+            indices = train_indices.indices
+        )
+
+        validation_dataset = Subset(
+            test_set,
+            indices = test_indices.indices
+        )
+
+        test_dataset = Subset(
+            validation_set,
+            indices = validation_indices.indices
+        )
+
+        return train_dataset, validation_dataset, test_dataset
 
     def load_dataset(self):
         ...
