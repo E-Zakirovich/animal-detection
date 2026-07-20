@@ -15,3 +15,5 @@ num_workers = 2
 image_size = 128
 batch_size = 32
 num_classes = 4
+learning_rate = 0.001
+num_epochs = 20
