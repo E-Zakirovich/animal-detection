@@ -1,11 +1,10 @@
 import torch
-from sympy import false
-from torch.utils.data import DataLoader, random_split, Subset
+from torch.utils.data import DataLoader, random_split, Subset, ConcatDataset
 from torchvision import datasets, transforms
 import config
 
 
-class Dataset:
+class DataPipeline:
 
     def __init__(self):
 
@@ -45,7 +44,10 @@ class Dataset:
             transforms.ToTensor(),
 
             # normalization part
-            transforms.Normalize()
+            transforms.Normalize(
+                mean=(0.485, 0.456, 0.406),
+                std=(0.229, 0.224, 0.225)
+            )
         ])
 
 
@@ -73,28 +75,62 @@ class Dataset:
         generator = torch.Generator().manual_seed(config.seed)
 
         # splitting the dataset according to its indexes
-        train_indices, test_indices, validation_indices = random_split(
+        train_indices, validation_indices, test_indices = random_split(
             train_set,
-            lengths = [config.train_size, config.test_size, config.validation_size],
+            lengths = [config.train_size, config.validation_size, config.test_size],
             generator = generator
         )
 
-        train_dataset = Subset(
+        train_subset = Subset(
             train_set,
             indices = train_indices.indices
         )
 
-        validation_dataset = Subset(
-            test_set,
-            indices = test_indices.indices
-        )
-
-        test_dataset = Subset(
+        validation_subset = Subset(
             validation_set,
             indices = validation_indices.indices
         )
 
-        return train_dataset, validation_dataset, test_dataset
+        test_subset = Subset(
+            test_set,
+            indices=test_indices.indices
+        )
 
-    def load_dataset(self):
-        ...
+        return train_subset, validation_subset, test_subset
+
+    def __data_combiner(self):
+
+        # loading different datasets
+        buffalo_train, buffalo_validation, buffalo_test = self.__dataset_loader(config.buffalo)
+        elephant_train, elephant_validation, elephant_test = self.__dataset_loader(config.elephant)
+        rhino_train, rhino_validation, rhino_test = self.__dataset_loader(config.rhino)
+        zebra_train, zebra_validation, zebra_test = self.__dataset_loader(config.zebra)
+
+        train_data = ConcatDataset(
+            [
+                buffalo_train,
+                elephant_train,
+                rhino_train,
+                zebra_train,
+            ]
+        )
+
+        validation_data = ConcatDataset(
+            [
+                buffalo_validation,
+                elephant_validation,
+                rhino_validation,
+                zebra_validation,
+            ]
+        )
+
+        test_data = ConcatDataset(
+            [
+                buffalo_test,
+                elephant_test,
+                rhino_test,
+                zebra_test,
+            ]
+        )
+
+        return train_data, validation_data, test_data
