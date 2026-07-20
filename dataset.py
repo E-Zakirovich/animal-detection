@@ -17,7 +17,7 @@ class DataPipeline:
             ),
 
             # to avoid underfitting or overfitting I am going to flip half of dataset elements
-            transforms.RandomVerticalFlip(p=0.5),
+            transforms.RandomHorizontalFlip(p=0.5),
 
             # main reason for rotate the image is, avoid underfitting or overfitting
             transforms.RandomRotation(degrees=10),
@@ -106,7 +106,7 @@ class DataPipeline:
         rhino_train, rhino_validation, rhino_test = self.__dataset_loader(config.rhino)
         zebra_train, zebra_validation, zebra_test = self.__dataset_loader(config.zebra)
 
-        train_data = ConcatDataset(
+        combined_train_data = ConcatDataset(
             [
                 buffalo_train,
                 elephant_train,
@@ -115,7 +115,7 @@ class DataPipeline:
             ]
         )
 
-        validation_data = ConcatDataset(
+        combined_validation_data = ConcatDataset(
             [
                 buffalo_validation,
                 elephant_validation,
@@ -124,7 +124,7 @@ class DataPipeline:
             ]
         )
 
-        test_data = ConcatDataset(
+        combined_test_data = ConcatDataset(
             [
                 buffalo_test,
                 elephant_test,
@@ -133,4 +133,30 @@ class DataPipeline:
             ]
         )
 
-        return train_data, validation_data, test_data
+        return combined_train_data, combined_validation_data, combined_test_data
+
+    def load_dataset(self):
+        train_data, validation_data, test_data = self.__data_combiner()
+
+        train_loader = DataLoader(
+            train_data,
+            batch_size = config.batch_size,
+            shuffle = True,
+            num_workers=config.num_workers
+        )
+
+        validation_loader = DataLoader(
+            validation_data,
+            batch_size = config.batch_size,
+            shuffle = False,
+            num_workers=config.num_workers
+        )
+
+        test_loader = DataLoader(
+            test_data,
+            batch_size = config.batch_size,
+            shuffle = False,
+            num_workers=config.num_workers
+        )
+
+        return train_loader, validation_loader, test_loader
