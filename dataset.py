@@ -4,6 +4,19 @@ from torchvision import datasets, transforms
 import config
 
 
+class RelabeledDataset(torch.utils.data.Dataset):
+    def __init__(self, subset, new_label):
+        self.subset = subset
+        self.new_label = new_label
+
+    def __len__(self):
+        return len(self.subset)
+
+    def __getitem__(self, idx):
+        image, _ = self.subset[idx]
+        return image, self.new_label
+
+
 class DataPipeline:
 
     def __init__(self):
@@ -51,7 +64,7 @@ class DataPipeline:
         ])
 
 
-    def __dataset_loader(self, path):
+    def __dataset_loader(self, path, label):
 
         # train dataset element processing
         train_set = datasets.ImageFolder(
@@ -81,19 +94,26 @@ class DataPipeline:
             generator = generator
         )
 
-        train_subset = Subset(
-            train_set,
-            indices = train_indices.indices
+        train_subset = RelabeledDataset(
+            Subset(
+                train_set,
+                indices=train_indices.indices
+            ),
+            label
         )
 
-        validation_subset = Subset(
-            validation_set,
-            indices = validation_indices.indices
+        validation_subset = RelabeledDataset(
+            Subset(
+                validation_set,
+                indices=validation_indices.indices
+            ),
+            label
         )
-
-        test_subset = Subset(
-            test_set,
-            indices=test_indices.indices
+        test_subset = RelabeledDataset(
+            Subset(
+                test_set,
+                indices=test_indices.indices),
+            label
         )
 
         return train_subset, validation_subset, test_subset
@@ -101,10 +121,10 @@ class DataPipeline:
     def __data_combiner(self):
 
         # loading different datasets
-        buffalo_train, buffalo_validation, buffalo_test = self.__dataset_loader(config.buffalo)
-        elephant_train, elephant_validation, elephant_test = self.__dataset_loader(config.elephant)
-        rhino_train, rhino_validation, rhino_test = self.__dataset_loader(config.rhino)
-        zebra_train, zebra_validation, zebra_test = self.__dataset_loader(config.zebra)
+        buffalo_train, buffalo_validation, buffalo_test = self.__dataset_loader(config.buffalo, label=0)
+        elephant_train, elephant_validation, elephant_test = self.__dataset_loader(config.elephant, label=1)
+        rhino_train, rhino_validation, rhino_test = self.__dataset_loader(config.rhino, label=2)
+        zebra_train, zebra_validation, zebra_test = self.__dataset_loader(config.zebra, label=3)
 
         combined_train_data = ConcatDataset(
             [
